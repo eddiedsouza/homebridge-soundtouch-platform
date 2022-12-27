@@ -1,13 +1,13 @@
-import {AccessoryConfig, GlobalConfig} from './accessory-config';
-import {SoundTouchAccessoryWrapper} from './sound-touch-accessory-wrapper';
-import {deviceFromConfig, searchAllDevices, SoundTouchDevice} from './sound-touch-device';
+import { AccessoryConfig, GlobalConfig } from './accessory-config';
+import { SoundTouchAccessoryWrapper } from './sound-touch-accessory-wrapper';
+import { deviceFromConfig, searchAllDevices, SoundTouchDevice } from './sound-touch-device';
 import {
     HomebridgeAccessoryWrapperConstructor,
     HomebridgePlatform,
     PlatformSettings
 } from 'homebridge-base-platform';
-import {SountTouchPlatformConfig} from './platform-config';
-import {API, Logging} from "homebridge";
+import { SountTouchPlatformConfig } from './platform-config';
+import { API, Logging } from "homebridge";
 
 export enum SoundTouchPlatformInfo {
     plugin = 'homebridge-soundtouch-platform',
@@ -20,7 +20,7 @@ export class SoundTouchPlatform extends HomebridgePlatform<SountTouchPlatformCon
         super(logger, config, api);
     }
 
-    protected getDefaultPlatformConfig(): SountTouchPlatformConfig | undefined{
+    protected getDefaultPlatformConfig(): SountTouchPlatformConfig | undefined {
         return {
             platform: SoundTouchPlatformInfo.name,
             discoverAllAccessories: true
@@ -41,9 +41,10 @@ export class SoundTouchPlatform extends HomebridgePlatform<SountTouchPlatformCon
     protected async searchDevices(): Promise<SoundTouchDevice[]> {
         const accessoryConfigs: AccessoryConfig[] = this.config.accessories || [];
         const globalConfig: GlobalConfig = this.config.global || {};
-        if(this.config.discoverAllAccessories === true) {
+        if (this.config.discoverAllAccessories === true) {
             return searchAllDevices(globalConfig, accessoryConfigs, this.log);
         }
-        return Promise.all(accessoryConfigs.map((ac) => deviceFromConfig(globalConfig, ac, this.log)));
+        const res = (await Promise.all(accessoryConfigs.map((ac) => deviceFromConfig(globalConfig, ac, this.log)))).filter(Boolean);
+        return res as SoundTouchDevice[];
     }
 }
